@@ -18,7 +18,7 @@ export const Item = pgTable("items", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   subjectId: uuid("subject_id")
     .notNull()
-    .references(() => Subject.id),
+    .references(() => Subject.id, { onDelete: "cascade" }),
 });
 
 export const itemRelations = relations(Item, ({ one }) => ({

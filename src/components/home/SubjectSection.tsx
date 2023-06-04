@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { db } from "@/db";
 import { Subject } from "@/db/schema";
@@ -7,6 +5,7 @@ import { desc } from "drizzle-orm";
 import Link from "next/link";
 import { createSubjectSchema } from "@/lib/validators";
 import { revalidatePath } from "next/cache";
+import AddSubjectForm from "./AddSubjectForm";
 
 async function getSubjects() {
   const subjects = await db
@@ -18,11 +17,17 @@ async function getSubjects() {
 
 async function addSubject(formData: FormData) {
   "use server";
-  const validated = createSubjectSchema.parse(
+  const validated = createSubjectSchema.safeParse(
     formData.get("subject")?.toString()
   );
-  await db.insert(Subject).values({ title: validated });
-  revalidatePath("/");
+
+  if (!validated.success) return;
+
+  const [inserted] = await db
+    .insert(Subject)
+    .values({ title: validated.data })
+    .returning();
+  return inserted.id;
 }
 
 export default async function SubjectSection() {
@@ -30,12 +35,7 @@ export default async function SubjectSection() {
 
   return (
     <aside className="w-2/5 flex flex-col gap-y-6 md:w-1/4">
-      <form action={addSubject} className="space-y-2">
-        <Input type="text" required placeholder="subject..." name="subject" />
-        <Button type="submit" className="w-full">
-          Add
-        </Button>
-      </form>
+      <AddSubjectForm addSubject={addSubject} />
       <ScrollArea className="flex-grow h-0">
         <ul className="list-disc list-inside break-all space-y-2">
           {subjects.map((subject) => (

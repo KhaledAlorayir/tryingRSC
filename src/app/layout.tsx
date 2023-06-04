@@ -5,10 +5,6 @@ import SubjectSection from "@/components/home/SubjectSection";
 export const metadata = {
   title: "wildfire",
 };
-/*
-  1- show validation error
-  2- reset form
-*/
 export default function RootLayout({
   children,
 }: {
