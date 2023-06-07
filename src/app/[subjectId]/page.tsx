@@ -4,8 +4,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import DeleteSubjectButton from "@/components/subject/DeleteSubjectButton";
 
 type props = {
   params: { subjectId: string };
@@ -20,12 +19,10 @@ async function getSubjectWithItems(subjectId: string) {
   return subject;
 }
 
-async function deleteSubject(formData: FormData) {
+async function deleteSubject(subjectId: string) {
   "use server";
-  const validated = z.string().trim().uuid().parse(formData.get("subjectId"));
+  const validated = z.string().trim().uuid().parse(subjectId);
   await db.delete(Subject).where(eq(Subject.id, validated));
-  revalidatePath("/");
-  redirect("/");
 }
 
 export default async function SubjectPage({ params }: props) {
@@ -41,10 +38,10 @@ export default async function SubjectPage({ params }: props) {
         <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
           {subject.title}
         </h4>
-        <form action={deleteSubject}>
-          <input type="hidden" name="subjectId" value={subject.id} />
-          <Button variant="destructive">Delete Subject</Button>
-        </form>
+        <DeleteSubjectButton
+          deleteSubject={deleteSubject}
+          subjectId={subject.id}
+        />
       </header>
       <section className="flex-1 border-[1px] border-secondary rounded px-4 py-2">
         <form className="flex flex-col md:flex-row">
