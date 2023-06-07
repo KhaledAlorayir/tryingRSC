@@ -5,12 +5,14 @@ import { z } from "zod";
 import DeleteSubjectButton from "@/components/subject/DeleteSubjectButton";
 import { revalidatePath } from "next/cache";
 import AddItemForm from "@/components/subject/AddItemForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ItemCard from "@/components/subject/ItemCard";
 
 type props = {
   params: { subjectId: string };
 };
 
-const MAXIMUM_ITEMS_COUNT_ALLOWED = 4;
+const MAXIMUM_ITEMS_COUNT_ALLOWED = 20;
 
 async function getSubjectWithItems(subjectId: string) {
   const validated = z.string().trim().uuid().parse(subjectId);
@@ -64,12 +66,17 @@ export default async function SubjectPage({ params }: props) {
           subjectId={subject.id}
         />
       </header>
-      <section className="flex-1 border-[1px] border-secondary rounded px-4 py-2">
+      <section className="flex-1 flex flex-col gap-y-8 border-[1px] border-secondary rounded px-4 py-2">
         <AddItemForm
           addItem={addItemToSubject}
           subjectId={subject.id}
           isDisabled={subject.items.length >= MAXIMUM_ITEMS_COUNT_ALLOWED}
         />
+        <ScrollArea className="flex-grow px-4 h-0">
+          {subject.items.map((item) => (
+            <ItemCard item={item} key={item.id} />
+          ))}
+        </ScrollArea>
       </section>
     </main>
   );

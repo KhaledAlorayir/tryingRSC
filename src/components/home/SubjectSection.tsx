@@ -4,7 +4,6 @@ import { Subject } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
 import { createSubjectSchema } from "@/lib/validators";
-import { revalidatePath } from "next/cache";
 import AddSubjectForm from "./AddSubjectForm";
 
 async function getSubjects() {

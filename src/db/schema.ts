@@ -1,5 +1,6 @@
-import { relations } from "drizzle-orm";
+import { InferModel, relations } from "drizzle-orm";
 import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { type } from "os";
 
 export const Subject = pgTable("subjects", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -27,3 +28,5 @@ export const itemRelations = relations(Item, ({ one }) => ({
     references: [Subject.id],
   }),
 }));
+
+export type Item = InferModel<typeof Item, "select">;
